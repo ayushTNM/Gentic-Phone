@@ -1,0 +1,24 @@
+[
+    {
+        "round": 1,
+        "texts": {
+            "ayush": "test",
+            "AI Bot 1": "An astronaut floating in space."
+        },
+        "drawings": {
+            "ayush": "assets/drawings/ayush_drawing_1.png",
+            "AI Bot 1": "assets/drawings/AI Bot 1_drawing_1.png"
+        }
+    },
+    {
+        "round": 2,
+        "texts": {
+            "ayush": "croc",
+            "AI Bot 1": "A house by the lake."
+        },
+        "drawings": {
+            "ayush": "assets/drawings/ayush_drawing_2.png",
+            "AI Bot 1": "assets/drawings/AI Bot 1_drawing_2.png"
+        }
+    }
+]
