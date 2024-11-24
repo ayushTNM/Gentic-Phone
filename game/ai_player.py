@@ -1,6 +1,7 @@
 # game/ai_player.py
 import os
 import random
+import google.generativeai as genai
 
 from ai.ai_logic import generate_ai_drawing, generate_ai_guess, generate_ai_text
 from game.player import Player
@@ -8,6 +9,11 @@ from ui.console_ui import display_message
 
 
 class AIPlayer(Player):
+    def __init__(self, name):
+        Player.__init__(self, name)
+        genai.configure(api_key=os.environ["API_KEY"])
+        self.model = genai.GenerativeModel("gemini-1.5-flash")
+    
     def provide_input(self, previous_output, phase, round):
         if phase == 'create_text':
             ai_text = generate_ai_text()
@@ -15,7 +21,7 @@ class AIPlayer(Player):
             return ai_text
         elif phase == 'guess_text':
             if previous_output:
-                ai_guess = generate_ai_guess(previous_output)
+                ai_guess = generate_ai_guess(previous_output, self.model)
                 display_message(f"{self.name} (AI) guesses text: {ai_guess}")
                 return ai_guess
             else:

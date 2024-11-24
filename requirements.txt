@@ -2,3 +2,4 @@
 #    uv pip compile .\pyproject.toml -o requirements.txt
 pillow==11.0.0
     # via gentic-phone (./pyproject.toml)
+google-generativeai==0.8.3 # manually added

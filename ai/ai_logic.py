@@ -2,6 +2,7 @@
 import io
 import random
 
+import google.generativeai as genai
 from PIL import Image
 
 
@@ -18,20 +19,11 @@ def generate_ai_text():
     ]
     return random.choice(responses)
 
-def generate_ai_guess(drawing_path):
-    # Placeholder logic for AI guessing based on a drawing
-    # In a real implementation, integrate with image recognition or AI image description models
-    # Here, we'll return a random guess
-    guesses = [
-        "A cat chasing a ball.",
-        "A spaceship landing on Mars.",
-        "A wizard casting a spell.",
-        "A car racing on a track.",
-        "A tree with colorful leaves.",
-        "A dog playing fetch.",
-        "A house by the lake."
-    ]
-    return random.choice(guesses)
+def generate_ai_guess(drawing_path, model):
+    image = genai.upload_file(drawing_path)
+    prompt = "We're playing Gentic Phone. What do you think this drawing is trying to show? Give a short answer, starting with A/An. Use your creativity."
+    response = model.generate_content([image, "\n", prompt])
+    return response.text
 
 def generate_ai_drawing(prompt):
     # Placeholder: Return empty bytes or integrate with an image generation API
