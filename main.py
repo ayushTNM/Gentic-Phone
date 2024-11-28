@@ -7,17 +7,12 @@ from ui.console_ui import display_message, get_user_input
 
 def initialize_players():
     players = []
-    human_player = None
 
     # Ask if the user wants to add a human player
     add_human = get_user_input("Do you want to add a human player? (yes/no): ").strip().lower()
     if add_human in ['yes', 'y']:
-        if not any(isinstance(p, HumanPlayer) for p in players):
-            name = get_user_input("Enter the name for the human player: ").strip()
-            human_player = HumanPlayer(name)
-            players.append(human_player)
-        else:
-            display_message("A human player has already been added. Only one human player is allowed.")
+        name = get_user_input("Enter the name for the human player: ").strip()
+        players.append(HumanPlayer(name))
 
     # Ask for the number of AI players
     while True:
@@ -34,10 +29,31 @@ def initialize_players():
         ai_name = f"AI Bot {i}"
         players.append(AIPlayer(ai_name))
 
-    if not players:
-        display_message("No players added. Exiting the game.")
-        exit()
-
+    # Enforce minimum of 3 players
+    if len(players) < 3:
+        display_message("The game requires at least 3 players to avoid self-assignment.")
+        while len(players) < 3:
+            if len(players) == 2:
+                # Prompt to add another AI player
+                ai_name = f"AI Bot {len(players) + 1}"
+                display_message(f"Adding another AI player: {ai_name}")
+                players.append(AIPlayer(ai_name))
+            elif len(players) == 1:
+                # Prompt to add more AI players
+                try:
+                    additional_ai = int(get_user_input("Enter the number of additional AI players to reach 3: ").strip())
+                    if additional_ai < 1:
+                        display_message("Please add at least 1 AI player.")
+                        continue
+                    for i in range(1, additional_ai + 1):
+                        ai_name = f"AI Bot {len(players) + 1}"
+                        display_message(f"Adding AI player: {ai_name}")
+                        players.append(AIPlayer(ai_name))
+                    if len(players) < 3:
+                        display_message("Still less than 3 players. Adding more AI players.")
+                except ValueError:
+                    display_message("Please enter a valid integer.")
+    
     return players
 
 def main():
@@ -45,7 +61,7 @@ def main():
 
     players = initialize_players()
 
-    display_message(f"\nPlayers in the game:")
+    display_message("\nPlayers in the game:")
     for player in players:
         player_type = "Human" if isinstance(player, HumanPlayer) else "AI"
         display_message(f"- {player.name} ({player_type})")

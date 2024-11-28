@@ -1,7 +1,12 @@
 import os
 import tkinter as tk
+from pathlib import Path
+from sys import base_prefix
 
 from PIL import Image, ImageDraw, ImageTk
+
+os.environ["TCL_LIBRARY"] = str(Path(base_prefix) / "lib" / "tcl8.6")
+os.environ["TK_LIBRARY"] = str(Path(base_prefix) / "lib" / "tk8.6")
 
 
 def save_drawing(player_name, round):

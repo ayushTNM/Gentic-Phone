@@ -1,4 +1,5 @@
 # game/human_player.py
+
 import os
 
 from game.player import Player
@@ -21,15 +22,14 @@ class HumanPlayer(Player):
                 display_message(f"{self.name}, no drawing available to guess.")
                 return "No guess"
         elif phase == 'draw':
-            if isinstance(previous_output, str):
+            if isinstance(previous_output, str) and previous_output not in ["No prompt", "No guess"]:
                 # Assuming previous_output is a text prompt or a guess
                 display_message(f"{self.name}, please draw based on the prompt: {previous_output}")
                 drawing_path = save_drawing(self.name, round)
                 return drawing_path
             else:
-                display_message(f"{self.name}, please draw based on the prompt: {previous_output}")
-                drawing_path = save_drawing(self.name, round)
-                return drawing_path
+                display_message(f"{self.name}, no valid prompt provided for drawing.")
+                return "No drawing"
 
     def receive_output(self, output, phase):
         if phase in ['create_text', 'guess_text']:
