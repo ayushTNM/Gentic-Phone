@@ -1,6 +1,7 @@
 # game/game.py
 
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from ui.console_ui import display_message
 from utils.derangement import derangement
@@ -65,10 +66,21 @@ class Game:
                 assigned_texts = self.distribute_texts(round_data["texts"])
                 round_data["draw_assignments"] = assigned_texts  # Record text assignments
 
-                for player in self.players:
-                    target_text = assigned_texts.get(player.name)
-                    input_drawing = player.provide_input(target_text, phase='draw', round=self.round)
-                    round_data["drawings"][player.name] = input_drawing
+                # Run drawing tasks in parallel
+                with ThreadPoolExecutor() as executor:
+                    futures = {
+                        executor.submit(
+                            player.provide_input, assigned_texts.get(player.name), phase='draw', round=self.round
+                        ): player.name for player in self.players
+                    }
+                    for future in as_completed(futures):
+                        player_name = futures[future]
+                        try:
+                            input_drawing = future.result()
+                        except Exception as exc:
+                            print(f"{player_name} generated an exception: {exc}")
+                            input_drawing = "No drawing generated due to error."
+                        round_data["drawings"][player_name] = input_drawing
 
             elif text_phase == 'guess_text':
                 # Assign texts to players based on their guesses without self-assignment
@@ -76,10 +88,21 @@ class Game:
                 assigned_texts = self.distribute_texts(round_data["texts"])
                 round_data["draw_assignments"] = assigned_texts  # Record text assignments
 
-                for player in self.players:
-                    target_text = assigned_texts.get(player.name)
-                    input_drawing = player.provide_input(target_text, phase='draw', round=self.round)
-                    round_data["drawings"][player.name] = input_drawing
+                # Run drawing tasks in parallel
+                with ThreadPoolExecutor() as executor:
+                    futures = {
+                        executor.submit(
+                            player.provide_input, assigned_texts.get(player.name), phase='draw', round=self.round
+                        ): player.name for player in self.players
+                    }
+                    for future in as_completed(futures):
+                        player_name = futures[future]
+                        try:
+                            input_drawing = future.result()
+                        except Exception as exc:
+                            print(f"{player_name} generated an exception: {exc}")
+                            input_drawing = "No drawing generated due to error."
+                        round_data["drawings"][player_name] = input_drawing
 
             self.history.append(round_data)
             print(self.history)
