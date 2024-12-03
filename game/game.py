@@ -1,7 +1,13 @@
 # game/game.py
 
 import json
+import os
+import tkinter as tk
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from tkinter import ttk
+from tkinter.scrolledtext import ScrolledText
+
+from PIL import Image, ImageTk
 
 from ui.console_ui import display_message
 from utils.derangement import derangement
@@ -179,22 +185,123 @@ class Game:
 
     def display_history(self):
         """
-        Display the game history in the console.
+        Display the game history as separate chats for each chain using Tkinter.
         """
-        display_message("\n--- Game History ---")
-        for round_data in self.history:
-            display_message(f"\nRound {round_data['round']}:")
-            display_message("Texts:")
-            for player, text in round_data["texts"].items():
-                display_message(f"  {player}: {text}")
-            if "guess_assignments" in round_data:
-                display_message("Guess Assignments:")
-                for player, drawing in round_data["guess_assignments"].items():
-                    display_message(f"  {player}: {drawing}")
-            if "draw_assignments" in round_data:
-                display_message("Draw Assignments:")
-                for player, text in round_data["draw_assignments"].items():
-                    display_message(f"  {player}: {text}")
-            display_message("Drawings:")
-            for player, drawing in round_data["drawings"].items():
-                display_message(f"  {player}: {drawing}")
+        # Create the main Tkinter window
+        root = tk.Tk()
+        root.title("Game History")
+
+        # Use a notebook to organize chains in tabs
+        notebook = ttk.Notebook(root)
+        notebook.pack(expand=True, fill='both')
+
+        # Get the initial texts from Round 1
+        initial_texts = self.history[0]['texts']  # Round 1 texts
+
+        # For each initial text, reconstruct the chain
+        for starter_player, initial_text in initial_texts.items():
+            # Create a frame for each chain
+            frame = ttk.Frame(notebook)
+            notebook.add(frame, text=f"{starter_player}'s Chain")
+
+            # Create a scrolled text widget for the chat
+            chat_display = ScrolledText(frame, wrap='word', state='disabled')
+            chat_display.pack(expand=True, fill='both')
+
+            chain = []
+            chain.append({
+                'player': starter_player,
+                'action': 'Text',
+                'content': initial_text
+            })
+
+            current_content = initial_text
+
+            # Iterate over the rounds, starting from Round 1
+            for round_number in range(0, len(self.history)):
+                round_data = self.history[round_number]
+
+                # Identify who was assigned to draw the current content
+                draw_assignments = round_data.get('draw_assignments', {})
+                drawings = round_data.get('drawings', {})
+
+                # Find the player assigned to draw the current content
+                drawing_player = None
+                for player_name, text in draw_assignments.items():
+                    if text == current_content:
+                        drawing_player = player_name
+                        break
+
+                if drawing_player:
+                    # Add the drawing to the chain
+                    drawing = drawings.get(drawing_player, 'No drawing')
+                    chain.append({
+                        'player': drawing_player,
+                        'action': 'Drawing',
+                        'content': drawing
+                    })
+                else:
+                    break  # No drawing found; end of chain
+
+                # For rounds beyond Round 1, find the guess for this drawing
+                if round_number + 1 < len(self.history):
+                    next_round_data = self.history[round_number + 1]
+                    guess_assignments = next_round_data.get('guess_assignments', {})
+                    texts = next_round_data.get('texts', {})
+
+                    # Find the player who was assigned this drawing to guess
+                    guessing_player = None
+                    for player_name, drawing_assigned in guess_assignments.items():
+                        if drawing_assigned == drawing:
+                            guessing_player = player_name
+                            break
+
+                    if guessing_player:
+                        # Add the guess to the chain
+                        guess_text = texts.get(guessing_player, 'No guess')
+                        chain.append({
+                            'player': guessing_player,
+                            'action': 'Guess',
+                            'content': guess_text
+                        })
+                        # Update current content for the next round
+                        current_content = guess_text
+                    else:
+                        break  # No guess found; end of chain
+                else:
+                    break  # Last round reached; end of chain
+
+            # Inside the loop over entries in the chain
+            for entry in chain:
+                player = entry['player']
+                action = entry['action']
+                content = entry['content']
+
+                # Enable the text widget to insert content
+                chat_display.configure(state='normal')
+
+                if action == 'Drawing' and os.path.exists(content):
+                    # Display the image
+                    try:
+                        img = Image.open(content)
+                        img.thumbnail((400, 400))  # Resize image if necessary
+                        photo = ImageTk.PhotoImage(img)
+                        chat_display.insert(tk.END, f"\n{player} ({action}):\n")
+                        chat_display.image_create(tk.END, image=photo)
+                        chat_display.insert(tk.END, "\n\n")
+                        # Keep a reference to the image to prevent garbage collection
+                        if not hasattr(chat_display, 'images'):
+                            chat_display.images = []
+                        chat_display.images.append(photo)
+                    except Exception as e:
+                        chat_display.insert(tk.END, f"{player} ({action}): [Error displaying image]\n\n")
+                else:
+                    # Format the message
+                    message = f"{player} ({action}): {content}\n\n"
+                    chat_display.insert(tk.END, message)
+
+                # Disable the text widget to prevent user editing
+                chat_display.configure(state='disabled')
+
+        # Start the Tkinter main loop
+        root.mainloop()
