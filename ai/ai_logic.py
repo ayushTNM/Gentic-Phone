@@ -73,7 +73,7 @@ def generate_ai_drawing(prompt, model):
                 save = False,
             ).params["url"],
             headers={"Content-Type": "application/json"},
-            timeout=30,
+            timeout=60,
         )
         response.raise_for_status()
         return response.content
