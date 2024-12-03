@@ -66,7 +66,7 @@ def generate_ai_drawing(prompt, model):
     try:
         # Encode the prompt for URL inclusion
         
-        return requests.get(
+        response = requests.get(
             url=model.generate(
                 prompt = f"Colorless doodle of {prompt}",
                 negative = "Color, realism",
@@ -74,7 +74,9 @@ def generate_ai_drawing(prompt, model):
             ).params["url"],
             headers={"Content-Type": "application/json"},
             timeout=30,
-        ).content
+        )
+        response.raise_for_status()
+        return response.content
     except Exception as e:
         print(f"Error generating ai image: {e}")
         return load_image(Image.open("temp_ai_img.jpg"))
