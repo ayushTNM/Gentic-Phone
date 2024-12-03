@@ -1,23 +1,20 @@
 # utils/derangement.py
 
-import random
-
-
 def derangement(lst):
     """
-    Generates a derangement of the input list where no element remains in its original position.
+    Generates a derangement of the input list by shifting elements by one position.
     Returns None if a derangement is not possible.
+    
+    Parameters:
+        lst (list): The input list to derange.
+    
+    Returns:
+        list or None: The deranged list or None if derangement isn't possible.
     """
     n = len(lst)
     if n < 2:
-        return None  # No derangement possible for n < 2
+        return None  # No derangement possible for lists with fewer than 2 elements
 
-    attempts = 0
-    max_attempts = 1000
-    while attempts < max_attempts:
-        shuffled = lst.copy()
-        random.shuffle(shuffled)
-        if all(shuffled[i] != lst[i] for i in range(n)):
-            return shuffled
-        attempts += 1
-    return None  # Failed to find a derangement
+    # Shift the list by one position to the left
+    deranged = lst[1:] + lst[:1]
+    return deranged
