@@ -17,6 +17,8 @@ class AIPlayer(Player):
         self.model = genai.GenerativeModel("gemini-1.5-flash")
         self.image_model = pollinations.image(
             model = pollinations.flux,
+            width = 400,
+            height = 400,
             enhance = False,
             nologo = True,
         )
