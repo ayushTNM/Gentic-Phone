@@ -111,11 +111,11 @@ class Game:
                         round_data["drawings"][player_name] = input_drawing
 
             self.history.append(round_data)
-            print(self.history)
+            # print(self.history)
 
         # Save history to a file
         # self.save_history()
-        display_message("\nGame history saved to 'game_history.json'")
+        # display_message("\nGame history saved to 'game_history.json'")
 
     def distribute_drawings(self, previous_drawings):
         """
@@ -142,8 +142,8 @@ class Game:
         for player_name, drawing in assigned_drawings.items():
             if drawing is None:
                 display_message(f"Warning: {player_name} has no drawing assigned for guessing.")
-            else:
-                print(f"DEBUG: Assigned drawing '{drawing}' to {player_name} for guessing.")
+            # else:
+            #     print(f"DEBUG: Assigned drawing '{drawing}' to {player_name} for guessing.")
 
         return assigned_drawings
 
@@ -171,8 +171,8 @@ class Game:
         for player_name, text in assigned_texts.items():
             if text == "No prompt":
                 display_message(f"Warning: {player_name} has no text assigned for drawing.")
-            else:
-                print(f"DEBUG: Assigned text '{text}' to {player_name} for drawing.")
+            # else:
+            #     print(f"DEBUG: Assigned text '{text}' to {player_name} for drawing.")
 
         return assigned_texts
 

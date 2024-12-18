@@ -57,7 +57,7 @@ def initialize_players():
     return players
 
 def main():
-    display_message("Welcome to Gartic Phone Clone!")
+    display_message("Welcome to Gentic Phone!")
 
     players = initialize_players()
 

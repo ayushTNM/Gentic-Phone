@@ -26,12 +26,12 @@ class AIPlayer(Player):
     def provide_input(self, previous_output, phase, round):
         if phase == 'create_text':
             ai_text = generate_ai_text(self.model)
-            display_message(f"{self.name} (AI) provides text: {ai_text}")
+            display_message(f"{self.name} (AI) provided text")
             return ai_text
         elif phase == 'guess_text':
             if previous_output:
                 ai_guess = generate_ai_guess(previous_output, self.model)
-                display_message(f"{self.name} (AI) guesses text: {ai_guess}")
+                display_message(f"{self.name} (AI) guessed")
                 return ai_guess
             else:
                 ai_guess = "No guess"
@@ -48,7 +48,7 @@ class AIPlayer(Player):
                 try:
                     with open(drawing_path, 'wb') as f:
                         f.write(ai_drawing)
-                    display_message(f"{self.name} (AI) provides a drawing: {drawing_path}")
+                    display_message(f"{self.name} (AI) provided a drawing")
                 except Exception as e:
                     display_message(f"{self.name} (AI) failed to save drawing: {e}")
                     drawing_path = "No drawing"

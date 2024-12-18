@@ -16,7 +16,7 @@ def generate_ai_text(model):
         # Initialize the Gemini model (assuming 'text-generation' is the correct model name)
         response = model.generate_content([prompt], generation_config={"temperature":1.5})
         ai_text = response.text.strip()
-        print(f"DEBUG: Gemini generated text: {ai_text}")  # Debug statement
+        # print(f"DEBUG: Gemini generated text: {ai_text}")  # Debug statement
         return ai_text
     except Exception as e:
         print(f"Error generating AI text: {e}")
@@ -50,7 +50,7 @@ def generate_ai_guess(drawing_path, model):
         prompt = "We're playing Gartic Phone. What do you think this drawing is trying to show? Give a short answer, starting with A/An. Use your creativity."
         response = model.generate_content([image, "\n", prompt])
         ai_guess = response.text.strip()
-        print(f"DEBUG: Gemini generated guess: {ai_guess}")  # Debug statement
+        # print(f"DEBUG: Gemini generated guess: {ai_guess}")  # Debug statement
         return ai_guess
     except Exception as e:
         print(f"Error generating AI guess: {e}")
